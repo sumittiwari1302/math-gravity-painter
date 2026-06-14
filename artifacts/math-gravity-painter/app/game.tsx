@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useRef, useState } from "react";
-import { Dimensions, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Dimensions, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,6 +12,9 @@ import { WORLDS } from "@/data/worlds";
 import { MATH_CHALLENGES } from "@/data/mathChallenges";
 import { getLevel } from "@/data/levels";
 import { useGame } from "@/context/GameContext";
+import { useSettings } from "@/context/SettingsContext";
+import { playVictorySound } from "@/hooks/useVictorySound";
+import { GlowButton } from "@/components/ui/GlowButton";
 import colors from "@/constants/colors";
 
 const { width, height } = Dimensions.get("window");
@@ -33,6 +36,17 @@ const LEVEL_HINTS: Record<string, string> = {
 function getHint(worldId: number, levelNumber: number): string {
   const key = `w${worldId}l${levelNumber}`;
   return LEVEL_HINTS[key] ?? `Draw a path from the ball 🔵 through the stars ⭐ to the portal 🌀. Press LAUNCH when ready!`;
+}
+const CONFETTI_COUNT = 36;
+
+interface ConfettiParticle {
+  id: number;
+  color: string;
+  x: number;
+  rotation: string;
+  size: number;
+  speed: number;
+  anim: Animated.Value;
 }
 
 export default function GameScreen() {
@@ -66,6 +80,18 @@ export default function GameScreen() {
   const collectedCountRef = useRef(0);
   const totalStars = level?.starPositions.length ?? 2;
 
+  const { sfxVolume } = useSettings();
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [earnedStars, setEarnedStars] = useState(1);
+  const [earnedCoins, setEarnedCoins] = useState(0);
+  const [earnedScore, setEarnedScore] = useState(0);
+  const [encouragingMessage, setEncouragingMessage] = useState("");
+
+  const popupScaleAnim = useRef(new Animated.Value(0)).current;
+  const popupStarAnims = useRef([new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]).current;
+  const confettiParticles = useRef<ConfettiParticle[]>([]);
+  const sparkleAnims = useRef<Animated.Value[]>([]);
+
   const ballColor = equippedItems.ball === "ball_purple" ? "#7C3AED"
     : equippedItems.ball === "ball_gold" ? "#F59E0B"
     : equippedItems.ball === "ball_red" ? "#EF4444"
@@ -81,17 +107,111 @@ export default function GameScreen() {
     setCollectedCount(collectedCountRef.current);
   }, []);
 
+  const startCelebrationAnimations = useCallback((stars: number) => {
+    // Reset animations
+    popupScaleAnim.setValue(0);
+    popupStarAnims.forEach(anim => anim.setValue(0));
+    
+    // Create confetti
+    const colorsList = ["#FFD700", "#FF4500", "#FF8C00", "#FF1493", "#00FF00", "#00FFFF", "#8A2BE2", "#FF00FF"];
+    const particles = Array.from({ length: CONFETTI_COUNT }).map((_, i) => ({
+      id: i,
+      color: colorsList[Math.floor(Math.random() * colorsList.length)],
+      x: Math.random() * width,
+      rotation: `${Math.floor(Math.random() * 360)}deg`,
+      size: 6 + Math.random() * 8,
+      speed: 1500 + Math.random() * 1200,
+      anim: new Animated.Value(0),
+    }));
+    confettiParticles.current = particles;
+
+    // Create sparkles
+    const sparkles = Array.from({ length: 12 }).map(() => new Animated.Value(0));
+    sparkleAnims.current = sparkles;
+    
+    // Encouragement message
+    const msgs = {
+      3: ["🌟 Amazing Solution!", "🧮 Excellent Work!"],
+      2: ["🎉 Great Job!", "🚀 Portal Reached!"],
+      1: ["🚀 Portal Reached!", "🎉 Great Job!"],
+    };
+    const pool = msgs[stars as 3 | 2 | 1] || msgs[1];
+    setEncouragingMessage(pool[Math.floor(Math.random() * pool.length)]);
+
+    // Start popup scale anim
+    Animated.spring(popupScaleAnim, {
+      toValue: 1,
+      tension: 50,
+      friction: 8,
+      useNativeDriver: true,
+    }).start();
+
+    // Start staggered star animations
+    const starAnimations = popupStarAnims.map((anim, idx) => {
+      if (idx < stars) {
+        return Animated.spring(anim, {
+          toValue: 1,
+          tension: 70,
+          friction: 6,
+          useNativeDriver: true,
+        });
+      }
+      return null;
+    }).filter(Boolean) as Animated.CompositeAnimation[];
+
+    if (starAnimations.length > 0) {
+      Animated.stagger(220, starAnimations).start();
+    }
+
+    // Start confetti falling
+    const fallingAnims = particles.map(p =>
+      Animated.timing(p.anim, {
+        toValue: 1,
+        duration: p.speed,
+        useNativeDriver: true,
+      })
+    );
+    Animated.parallel(fallingAnims).start();
+
+    // Start sparkles burst
+    const burstAnims = sparkles.map(s =>
+      Animated.sequence([
+        Animated.timing(s, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(s, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        })
+      ])
+    );
+    Animated.parallel(burstAnims).start();
+  }, [width, popupScaleAnim, popupStarAnims]);
+
   const handlePortalReached = useCallback(() => {
     if (gameComplete) return;
     setGameComplete(true);
     const stars = collectedCountRef.current >= totalStars ? 3
       : collectedCountRef.current >= Math.ceil(totalStars / 2) ? 2 : 1;
     const coins = stars * 10 + lnum * 5;
+    const score = stars * 1000 + coins * 100;
+    
+    // Save progress automatically
     completeLevelAction(`w${wid}l${lnum}`, stars, coins);
-    setTimeout(() => {
-      router.replace({ pathname: "/complete", params: { worldId: wid, levelNumber: lnum, stars, coins } });
-    }, 500);
-  }, [gameComplete, totalStars, wid, lnum]);
+    
+    // Play audio/haptic celebration
+    playVictorySound(sfxVolume);
+    
+    setEarnedStars(stars);
+    setEarnedCoins(coins);
+    setEarnedScore(score);
+    setShowSuccessPopup(true);
+    
+    startCelebrationAnimations(stars);
+  }, [gameComplete, totalStars, wid, lnum, sfxVolume, completeLevelAction, startCelebrationAnimations]);
 
   const handleMathNeeded = useCallback(() => {
     if (!mathSolved) setMathVisible(true);
@@ -115,6 +235,7 @@ export default function GameScreen() {
     setHasPath(false);
     setShowHint(false);
     setShouldReset(true);
+    setShowSuccessPopup(false);
   }, []);
 
   const handleLaunch = useCallback(() => {
@@ -197,6 +318,7 @@ export default function GameScreen() {
           shouldReset={shouldReset}
           onResetDone={() => setShouldReset(false)}
           hintText={hintText}
+          gameComplete={gameComplete}
         />
       </View>
 
@@ -231,6 +353,203 @@ export default function GameScreen() {
         onCorrect={handleMathCorrect}
         onWrong={handleMathWrong}
       />
+
+      {/* Confetti Celebration */}
+      {showSuccessPopup && confettiParticles.current.map(p => {
+        const translateY = p.anim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [-50, height + 100],
+        });
+        const translateX = p.anim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [p.x, p.x + (Math.random() * 80 - 40)],
+        });
+        return (
+          <Animated.View
+            key={p.id}
+            style={[
+              styles.confetti,
+              {
+                backgroundColor: p.color,
+                width: p.size,
+                height: p.size,
+                borderRadius: p.size / 2,
+                transform: [
+                  { translateX },
+                  { translateY },
+                  { rotate: p.rotation },
+                ],
+              },
+            ]}
+          />
+        );
+      })}
+
+      {/* Sparkles / Burst particles */}
+      {showSuccessPopup && sparkleAnims.current.map((anim, i) => {
+        const angle = (i * 30 * Math.PI) / 180;
+        const distance = 140;
+        const translateX = anim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, Math.cos(angle) * distance],
+        });
+        const translateY = anim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, Math.sin(angle) * distance],
+        });
+        const scale = anim.interpolate({
+          inputRange: [0, 0.7, 1],
+          outputRange: [0, 1.2, 0],
+        });
+        return (
+          <Animated.View
+            key={i}
+            style={[
+              styles.sparkle,
+              {
+                left: width / 2 - 8,
+                top: height / 2 - 50,
+                transform: [
+                  { translateX },
+                  { translateY },
+                  { scale },
+                ],
+              },
+            ]}
+          >
+            <Feather name="star" size={16} color={colors.goldLight} />
+          </Animated.View>
+        );
+      })}
+
+      {/* Success Modal Overlay */}
+      {showSuccessPopup && (
+        <View style={styles.popupOverlay}>
+          <Animated.View style={[styles.popupCard, { transform: [{ scale: popupScaleAnim }] }]}>
+            <LinearGradient
+              colors={[world.color + "30", colors.card]}
+              style={styles.popupGradient}
+            >
+              {/* Encouraging header */}
+              <Text style={[styles.popupEncouragement, { color: colors.goldLight }]}>{encouragingMessage}</Text>
+              
+              {/* Title */}
+              <Text style={styles.popupTitle}>🎉 LEVEL COMPLETED!</Text>
+              
+              {/* World name and level */}
+              <Text style={styles.popupWorldName}>{world.emoji} {world.name} · Level {lnum}</Text>
+
+              {/* Stars animation */}
+              <View style={styles.popupStarsRow}>
+                {[0, 1, 2].map(i => (
+                  <Animated.View
+                    key={i}
+                    style={{
+                      transform: [
+                        { scale: popupStarAnims[i] },
+                        { rotate: i === 1 ? "0deg" : i === 0 ? "-15deg" : "15deg" },
+                      ],
+                    }}
+                  >
+                    <Feather
+                      key={i}
+                      name="star"
+                      size={i === 1 ? 62 : 46}
+                      color={i < earnedStars ? colors.gold : colors.textDim}
+                      style={i < earnedStars ? styles.popupStarShadow : {}}
+                    />
+                  </Animated.View>
+                ))}
+              </View>
+
+              {/* Score breakdown */}
+              <View style={styles.popupStatsCard}>
+                <View style={styles.popupStatRow}>
+                  <View style={styles.popupStatLabelCol}>
+                    <Feather name="star" size={16} color={colors.goldLight} />
+                    <Text style={styles.popupStatLabel}>Stars Earned</Text>
+                  </View>
+                  <Text style={[styles.popupStatVal, { color: colors.gold }]}>{earnedStars} / 3</Text>
+                </View>
+
+                <View style={styles.popupStatDivider} />
+
+                <View style={styles.popupStatRow}>
+                  <View style={styles.popupStatLabelCol}>
+                    <Feather name="circle" size={16} color={colors.accentLight} />
+                    <Text style={styles.popupStatLabel}>Coins Earned</Text>
+                  </View>
+                  <Text style={[styles.popupStatVal, { color: colors.accentLight }]}>+{earnedCoins}</Text>
+                </View>
+
+                <View style={styles.popupStatDivider} />
+
+                <View style={styles.popupStatRow}>
+                  <View style={styles.popupStatLabelCol}>
+                    <Feather name="award" size={16} color={world.color} />
+                    <Text style={styles.popupStatLabel}>Score Earned</Text>
+                  </View>
+                  <Text style={[styles.popupStatVal, { color: world.color }]}>{earnedScore}</Text>
+                </View>
+              </View>
+
+              {/* Action Buttons */}
+              <View style={styles.popupButtons}>
+                <GlowButton
+                  label="Replay Level"
+                  icon={<Feather name="rotate-ccw" size={16} color={colors.text} />}
+                  onPress={handleReset}
+                  color={colors.surface}
+                  textColor={colors.text}
+                  size="md"
+                  style={{ flex: 1 }}
+                />
+
+                {lnum < 15 ? (
+                  <GlowButton
+                    label="Next Level"
+                    icon={<Feather name="play" size={16} color={colors.white} />}
+                    onPress={() => {
+                      setShowSuccessPopup(false);
+                      setGameComplete(false);
+                      router.replace({ pathname: "/challenge", params: { worldId: wid, levelNumber: lnum + 1 } });
+                    }}
+                    color={world.color}
+                    size="md"
+                    style={{ flex: 1 }}
+                  />
+                ) : (
+                  <GlowButton
+                    label="Worlds"
+                    icon={<Feather name="home" size={16} color={colors.white} />}
+                    onPress={() => {
+                      setShowSuccessPopup(false);
+                      router.replace("/worlds");
+                    }}
+                    color={world.color}
+                    size="md"
+                    style={{ flex: 1 }}
+                  />
+                )}
+              </View>
+
+              {lnum < 15 && (
+                <GlowButton
+                  label="Back to Worlds"
+                  icon={<Feather name="home" size={14} color={colors.textMuted} />}
+                  onPress={() => {
+                    setShowSuccessPopup(false);
+                    router.replace("/worlds");
+                  }}
+                  color="transparent"
+                  textColor={colors.textMuted}
+                  size="sm"
+                />
+              )}
+            </LinearGradient>
+          </Animated.View>
+        </View>
+      )}
     </View>
   );
 }
@@ -304,4 +623,121 @@ const styles = StyleSheet.create({
   resetText: { fontSize: 13, color: colors.white, fontFamily: "Inter_600SemiBold" },
   errorView: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.background },
   errorText: { color: colors.white, fontSize: 18 },
+
+  popupOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 100,
+    backgroundColor: "rgba(13, 11, 30, 0.88)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  popupCard: {
+    width: "100%",
+    maxWidth: 400,
+    borderRadius: 28,
+    overflow: "hidden",
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  popupGradient: {
+    padding: 28,
+    alignItems: "center",
+    gap: 16,
+  },
+  popupEncouragement: {
+    fontSize: 24,
+    fontFamily: "Inter_700Bold",
+    textAlign: "center",
+    textShadowColor: "rgba(0,0,0,0.5)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 4,
+  },
+  popupTitle: {
+    fontSize: 20,
+    fontFamily: "Inter_700Bold",
+    color: colors.white,
+    textAlign: "center",
+    letterSpacing: 1,
+    marginTop: -8,
+  },
+  popupWorldName: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+    color: colors.textMuted,
+    textAlign: "center",
+    marginTop: -4,
+  },
+  popupStarsRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 16,
+    marginVertical: 12,
+  },
+  popupStarShadow: {
+    shadowColor: colors.gold,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.95,
+    shadowRadius: 10,
+  },
+  popupStatsCard: {
+    backgroundColor: "rgba(26, 22, 50, 0.6)",
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.05)",
+    gap: 10,
+    marginVertical: 4,
+  },
+  popupStatRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  popupStatLabelCol: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  popupStatLabel: {
+    fontSize: 14,
+    color: colors.text,
+    fontFamily: "Inter_500Medium",
+  },
+  popupStatVal: {
+    fontSize: 16,
+    fontFamily: "Inter_700Bold",
+  },
+  popupStatDivider: {
+    height: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.06)",
+    width: "100%",
+  },
+  popupButtons: {
+    flexDirection: "row",
+    gap: 12,
+    width: "100%",
+    marginTop: 10,
+  },
+  confetti: {
+    position: "absolute",
+    zIndex: 90,
+    pointerEvents: "none",
+  },
+  sparkle: {
+    position: "absolute",
+    zIndex: 95,
+    pointerEvents: "none",
+  },
 });

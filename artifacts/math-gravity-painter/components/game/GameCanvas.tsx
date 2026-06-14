@@ -26,6 +26,7 @@ interface GameCanvasProps {
   shouldReset: boolean;
   onResetDone: () => void;
   hintText?: string;
+  gameComplete?: boolean;
 }
 
 function samplePath(pts: Point[], maxPts: number): Point[] {
@@ -79,6 +80,7 @@ export function GameCanvas({
   level, selectedTool, showHint, mathSolved, portalColor, ballColor,
   onStarCollected, onPortalReached, onMathNeeded, isLaunched, setIsLaunched,
   canvasWidth, canvasHeight, onPathDrawn, shouldReset, onResetDone, hintText,
+  gameComplete = false,
 }: GameCanvasProps) {
   const scale = { x: canvasWidth, y: canvasHeight };
 
@@ -96,6 +98,7 @@ export function GameCanvas({
   const ballX = useRef(new Animated.Value(ballStart.x)).current;
   const ballY = useRef(new Animated.Value(ballStart.y)).current;
   const ballGlow = useRef(new Animated.Value(1)).current;
+  const ballScale = useRef(new Animated.Value(1)).current;
   const [ballPos, setBallPos] = useState(ballStart);
   const animRef = useRef<Animated.CompositeAnimation | null>(null);
   const gravAnimRef = useRef<Animated.CompositeAnimation | null>(null);
@@ -138,6 +141,7 @@ export function GameCanvas({
     progressRef.current.removeAllListeners();
     ballX.setValue(ballStart.x);
     ballY.setValue(ballStart.y);
+    ballScale.setValue(1);
     setBallPos(ballStart);
     setPaths([]);
     setCurrentPoints([]);
@@ -173,7 +177,39 @@ export function GameCanvas({
       } else {
         animRef.current?.stop();
         gravAnimRef.current?.stop();
-        onPortalReached();
+        
+        // Portal sucking animation
+        Animated.parallel([
+          Animated.timing(ballX, {
+            toValue: portalPos.x,
+            duration: 350,
+            useNativeDriver: false,
+          }),
+          Animated.timing(ballY, {
+            toValue: portalPos.y,
+            duration: 350,
+            useNativeDriver: false,
+          }),
+          Animated.timing(ballScale, {
+            toValue: 0,
+            duration: 350,
+            useNativeDriver: false,
+          }),
+          Animated.sequence([
+            Animated.timing(portalPulse, {
+              toValue: 1.4,
+              duration: 180,
+              useNativeDriver: false,
+            }),
+            Animated.timing(portalPulse, {
+              toValue: 1.0,
+              duration: 180,
+              useNativeDriver: false,
+            }),
+          ]),
+        ]).start(() => {
+          onPortalReached();
+        });
       }
     }
   }, [scaledStars, portalPos, mathSolved]);
@@ -253,10 +289,10 @@ export function GameCanvas({
   }, [isLaunched]);
 
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => !isLaunched,
-    onMoveShouldSetPanResponder: () => !isLaunched,
+    onStartShouldSetPanResponder: () => !isLaunched && !gameComplete,
+    onMoveShouldSetPanResponder: () => !isLaunched && !gameComplete,
     onPanResponderGrant: (e) => {
-      if (isLaunched) return;
+      if (isLaunched || gameComplete) return;
       const { locationX, locationY } = e.nativeEvent;
       if (selectedTool === "eraser") {
         setCurrentPoints([{ x: locationX, y: locationY }]);
@@ -265,12 +301,12 @@ export function GameCanvas({
       }
     },
     onPanResponderMove: (e) => {
-      if (isLaunched) return;
+      if (isLaunched || gameComplete) return;
       const { locationX, locationY } = e.nativeEvent;
       setCurrentPoints(prev => [...prev, { x: locationX, y: locationY }]);
     },
     onPanResponderRelease: () => {
-      if (isLaunched) return;
+      if (isLaunched || gameComplete) return;
       setCurrentPoints(prev => {
         if (prev.length > 1) {
           if (selectedTool === "eraser") {
@@ -442,7 +478,12 @@ export function GameCanvas({
             transform: [
               { translateX: -BALL_R },
               { translateY: -BALL_R },
-              { scale: isLaunched ? 1 : ballGlow.interpolate({ inputRange: [1, 1.4], outputRange: [1, 1.08] }) },
+              {
+                scale: Animated.multiply(
+                  ballScale,
+                  isLaunched ? 1 : ballGlow.interpolate({ inputRange: [1, 1.4], outputRange: [1, 1.08] })
+                )
+              },
             ],
             shadowColor: ballColor,
           },
