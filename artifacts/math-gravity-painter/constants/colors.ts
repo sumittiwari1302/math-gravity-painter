@@ -1,0 +1,28 @@
+const colors = {
+  background: "#0D0B1E",
+  surface: "#1A1632",
+  card: "#231E44",
+  cardBorder: "#3A3266",
+  primary: "#7C3AED",
+  primaryLight: "#9D5EF5",
+  primaryDark: "#5B21B6",
+  accent: "#06B6D4",
+  accentLight: "#22D3EE",
+  gold: "#F59E0B",
+  goldLight: "#FCD34D",
+  white: "#FFFFFF",
+  text: "#E2D9F3",
+  textMuted: "#8B7DB8",
+  textDim: "#5A5280",
+  green: "#10B981",
+  greenLight: "#34D399",
+  red: "#EF4444",
+  redLight: "#F87171",
+  orange: "#F97316",
+  pink: "#EC4899",
+  border: "#3A3266",
+  starYellow: "#FFD700",
+  radius: 16,
+};
+
+export default colors;

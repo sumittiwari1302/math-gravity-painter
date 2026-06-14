@@ -1,0 +1,644 @@
+# MATH GRAVITY PAINTER – FINAL REPLIT BUILD PROMPT
+
+Use the uploaded logo/image as the PRIMARY game logo and branding asset. You may refine, enhance, clean, recolor, add glow effects, improve typography, and adapt it for UI while preserving its identity. Use it throughout the game including Splash Screen, Loading Screen, Main Menu, App Icon, World Selection, and Branding Elements.
+
+Build a COMPLETE, FULLY WORKING, PRODUCTION-READY educational game called:
+
+🚀 MATH GRAVITY PAINTER
+
+Tech Stack:
+- React Native
+- Expo
+- TypeScript
+- React Navigation
+- React Native SVG
+- React Native Reanimated
+- Expo AV
+- AsyncStorage
+- Responsive Layout System
+
+Platforms:
+✅ Android
+✅ iOS
+✅ Tablets
+✅ Desktop Web
+✅ Mobile Web
+
+--------------------------------------------------
+CORE GAME VISION
+--------------------------------------------------
+
+Math Gravity Painter is a Physics Puzzle + Educational Adventure Game where students learn mathematics through gameplay.
+
+Target Audience:
+📚 Grade 5
+📚 Grade 6
+📚 Grade 7
+📚 Grade 8
+📚 Grade 9
+
+Game Feel:
+✅ Easy
+✅ Fun
+✅ Smooth
+✅ Educational
+✅ Child Friendly
+✅ Modern
+✅ Colorful
+✅ Space Themed
+✅ Math Focused
+
+Priority:
+Fun > Realistic Physics
+Learning > Difficulty
+
+--------------------------------------------------
+MOST IMPORTANT REQUIREMENT
+--------------------------------------------------
+
+Current ball movement is difficult.
+
+Fix completely.
+
+Even a Grade 5 student should understand and play within 1 minute.
+
+Implement:
+
+- Assisted Ball Movement
+- Smart Gravity Guidance
+- Magnetic Path Following
+- Auto Path Correction
+- Easy Star Collection
+- Smooth Direction Changes
+- Child Friendly Controls
+
+If realistic physics causes frustration, simplify physics.
+
+The game must be FUN first.
+
+--------------------------------------------------
+WORLD SYSTEM
+--------------------------------------------------
+
+ALL 5 WORLDS MUST EXIST.
+
+ALL WORLD LEVEL 1 MUST BE UNLOCKED FROM START.
+
+Players can try any world immediately.
+
+Remaining levels unlock normally.
+
+Worlds:
+
+🌌 Fraction Galaxy
+➕ Integer Space
+📐 Geometry Planet
+🧩 Algebra Station
+🎲 Probability Zone
+
+--------------------------------------------------
+VERY IMPORTANT WORLD REDESIGN
+--------------------------------------------------
+
+Every world MUST have different gameplay.
+
+DO NOT reuse the same level structure.
+
+DO NOT copy mechanics.
+
+Each world must teach its own topic through gameplay.
+
+--------------------------------------------------
+WORLD 1 – FRACTION GALAXY
+--------------------------------------------------
+
+Topic:
+Fractions
+
+Gameplay:
+- Fraction Piece Collection
+- Fraction Matching
+- Fraction Gates
+- Fraction Bridges
+- Fraction Circles
+
+Examples:
+1/2 + 1/4 = 3/4
+
+Levels:
+15 Unique Levels
+
+--------------------------------------------------
+WORLD 2 – INTEGER SPACE
+--------------------------------------------------
+
+Topic:
+Positive & Negative Numbers
+
+Gameplay:
+- Positive Gravity Zones
+- Negative Gravity Zones
+- Integer Switches
+- Push/Pull Gravity
+- Integer Path Selection
+
+Example:
+5 + (-3) = 2
+
+Levels:
+15 Unique Levels
+
+--------------------------------------------------
+WORLD 3 – GEOMETRY PLANET
+--------------------------------------------------
+
+Topic:
+Shapes, Area & Perimeter
+
+Gameplay:
+- Draw Shapes
+- Build Platforms
+- Create Bridges
+- Area Challenges
+- Perimeter Challenges
+
+Levels:
+15 Unique Levels
+
+--------------------------------------------------
+WORLD 4 – ALGEBRA STATION
+--------------------------------------------------
+
+Topic:
+Variables & Equations
+
+Gameplay:
+- Equation Doors
+- Variable Locks
+- Number Machines
+- Algebra Gates
+- Equation Switches
+
+Example:
+x + 5 = 10
+
+Levels:
+15 Unique Levels
+
+--------------------------------------------------
+WORLD 5 – PROBABILITY ZONE
+--------------------------------------------------
+
+Topic:
+Probability
+
+Gameplay:
+- Dice Challenges
+- Spinner Challenges
+- Probability Paths
+- Chance Gates
+- Prediction Puzzles
+
+Levels:
+15 Unique Levels
+
+--------------------------------------------------
+LEVEL DESIGN
+--------------------------------------------------
+
+Total Levels:
+75
+
+Difficulty:
+
+Levels 1-5
+🟢 Very Easy
+
+Levels 6-10
+🟡 Easy
+
+Levels 11-15
+🟠 Medium
+
+Teach one mechanic at a time.
+
+No frustrating puzzles.
+
+No impossible physics.
+
+Every level should feel rewarding.
+
+--------------------------------------------------
+DRAWING SYSTEM
+--------------------------------------------------
+
+Replace basic drawing system.
+
+Create a smooth child-friendly drawing system.
+
+Tools:
+
+✏️ Pencil
+📏 Line
+〰️ Curve
+🌙 Arc
+⭕ Circle
+🔺 Triangle
+⬜ Rectangle
+🧽 Eraser
+↩️ Undo
+
+Support:
+
+- Touch
+- Mouse
+- Tablet Pen
+
+Add:
+
+- Drawing Preview
+- Shape Preview
+- Undo
+- Clear All
+
+--------------------------------------------------
+FLOATING TOOLBAR
+--------------------------------------------------
+
+Toolbar must NOT occupy permanent screen space.
+
+Create:
+
+Floating Expandable Toolbar
+
+Default:
+Collapsed
+
+When tapped:
+Expand from side
+
+Auto-hide when inactive.
+
+Must work on:
+📱 Mobile
+📲 Tablet
+💻 Desktop
+
+--------------------------------------------------
+BALL DESIGN
+--------------------------------------------------
+
+Replace placeholder ball.
+
+Create:
+
+🔵 Glowing Gravity Ball
+
+Features:
+
+- Glow Effect
+- Trail Effect
+- Smooth Animation
+- Friendly Appearance
+- High Visibility
+
+--------------------------------------------------
+HINT SYSTEM
+--------------------------------------------------
+
+💡 Hint 1
+
+Show:
+- Starting Area
+- First Drawing Area
+- Arrow Guidance
+
+💡 Hint 2
+
+Show Complete Solution:
+
+- Exact Line
+- Exact Curve
+- Exact Shape
+- Star Route
+- Portal Route
+
+Use:
+
+- Dotted Paths
+- Animated Trace
+- Glow Effect
+- Direction Arrows
+
+--------------------------------------------------
+FACT & LEARNING SCREEN
+--------------------------------------------------
+
+Before EVERY level show:
+
+🧠 Fun Fact
+🧩 Puzzle
+❓ Quiz
+🎯 Challenge
+🚀 Space Fact
+🧮 Math Fact
+
+Must match selected world.
+
+Examples:
+
+Fraction World → Fraction Fact
+
+Integer World → Integer Puzzle
+
+Geometry World → Shape Challenge
+
+Algebra World → Equation Quiz
+
+Probability World → Chance Puzzle
+
+IMPORTANT:
+
+DO NOT auto close.
+
+Screen remains until player presses:
+
+▶️ Continue
+
+--------------------------------------------------
+USERNAME SYSTEM
+--------------------------------------------------
+
+First Launch:
+
+Ask Username
+
+Buttons:
+
+🚀 Start Adventure
+▶️ Continue
+
+Save locally.
+
+Use username everywhere:
+
+- Leaderboard
+- Profile
+- Statistics
+
+--------------------------------------------------
+HOW TO PLAY
+--------------------------------------------------
+
+Create full tutorial section.
+
+Include:
+
+- Gravity Tutorial
+- Drawing Tutorial
+- Shape Tutorial
+- Star Collection Tutorial
+- Portal Tutorial
+- Math Tutorial
+
+Add:
+
+🎥 AI Demo Video Section
+
+Show:
+
+- Drawing
+- Curves
+- Shapes
+- Ball Movement
+- Star Collection
+- Level Completion
+
+Controls:
+
+▶️ Play
+⏸ Pause
+🔄 Replay
+
+--------------------------------------------------
+SHOP
+--------------------------------------------------
+
+Fully Functional
+
+Items:
+
+🎨 Ball Skins
+✨ Trails
+🌀 Portal Skins
+✏️ Pencil Styles
+🌌 Background Themes
+
+Use earned coins.
+
+--------------------------------------------------
+ACHIEVEMENTS
+--------------------------------------------------
+
+🏆 First Level Complete
+🏆 First World Complete
+⭐ Collect 50 Stars
+⭐ Collect 100 Stars
+🧮 Solve 100 Questions
+👑 Perfect Level
+🚀 Math Explorer
+
+--------------------------------------------------
+LEADERBOARD
+--------------------------------------------------
+
+Track:
+
+- Username
+- Coins
+- Stars
+- Score
+- Completion %
+
+--------------------------------------------------
+STATISTICS
+--------------------------------------------------
+
+Track:
+
+- Total Play Time
+- Levels Completed
+- Questions Solved
+- Stars Collected
+- Coins Earned
+
+--------------------------------------------------
+SETTINGS
+--------------------------------------------------
+
+Fully Working
+
+Options:
+
+🔊 Music Volume
+🔉 SFX Volume
+📳 Vibration Toggle
+
+Languages:
+
+🇺🇸 English
+🇮🇳 Hindi
+🇮🇳 Marathi
+🇪🇸 Spanish
+🇫🇷 French
+🇩🇪 German
+
+Reset Progress Option
+
+Language change must update UI.
+
+--------------------------------------------------
+AUDIO SYSTEM
+--------------------------------------------------
+
+Background Music:
+
+🎵 Menu Theme
+🎵 Fraction Theme
+🎵 Integer Theme
+🎵 Geometry Theme
+🎵 Algebra Theme
+🎵 Probability Theme
+🎵 Victory Theme
+
+Sound Effects:
+
+🔘 Button Click
+✏️ Draw
+🧽 Erase
+⭐ Star Collection
+💰 Coin Collection
+🧮 Correct Answer
+❌ Wrong Answer
+🌀 Portal Open
+🏆 Achievement Unlock
+🎉 Level Complete
+
+--------------------------------------------------
+RESPONSIVE UI REQUIREMENTS
+--------------------------------------------------
+
+Current UI has scaling issues.
+
+Fix completely.
+
+Support:
+
+📱 Small Phones
+📱 Large Phones
+📲 Tablets
+💻 Desktop
+🌐 Web
+
+Requirements:
+
+- No overlapping UI
+- No cut-off text
+- No oversized cards
+- No tiny buttons
+- Responsive scaling
+- Flexible layouts
+- Scrollable screens
+- Safe Area support
+
+If content exceeds screen height:
+
+USE SCROLLVIEW.
+
+All pages must remain accessible.
+
+--------------------------------------------------
+UI STYLE
+--------------------------------------------------
+
+Theme:
+
+🚀 SPACE + MATH
+
+Colors:
+
+💙 Deep Space Blue
+💜 Purple
+🩵 Cyan
+🤍 White
+💛 Soft Yellow
+
+Use:
+
+- Bright Colors
+- Friendly Emoji
+- Rounded Cards
+- Rounded Buttons
+- Glow Effects
+- Smooth Animations
+
+Buttons must feel:
+
+- Attractive
+- Modern
+- Interactive
+- Easy to tap
+
+--------------------------------------------------
+SAVE SYSTEM
+--------------------------------------------------
+
+Auto Save
+
+Store:
+
+- Username
+- Progress
+- Coins
+- Stars
+- Achievements
+- Statistics
+- Settings
+
+Use AsyncStorage.
+
+--------------------------------------------------
+FINAL REQUIREMENTS
+--------------------------------------------------
+
+This must NOT be a prototype.
+
+This must NOT be a mockup.
+
+This must be a FULLY WORKING GAME.
+
+✅ 5 Worlds
+✅ 75 Levels
+✅ Different gameplay per world
+✅ Level 1 unlocked in all worlds
+✅ Smooth gravity gameplay
+✅ Easy controls
+✅ Responsive UI
+✅ Scrollable screens
+✅ Music and SFX
+✅ Hints
+✅ Tutorials
+✅ AI Demo Video Section
+✅ Shop
+✅ Achievements
+✅ Statistics
+✅ Leaderboard
+✅ Language Switching
+✅ Save System
+✅ Mobile + Tablet + Desktop + Web Support
+✅ Bright Space + Math Design
+✅ Child Friendly Experience
+✅ Educational Gameplay
+✅ Professional Quality Production Build
+
+Build the complete game with reusable architecture, scalable code, clean folder structure, proper navigation, responsive layouts, local persistence, animations, audio, educational systems, and polished user experience.

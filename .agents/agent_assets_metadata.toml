@@ -1,0 +1,38 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "XyARv5nRI5i25YoK0Ft1O"
+uri = "file://artifacts/math-gravity-painter/assets/images/icon.png"
+type = "image"
+title = "math gravity painter app icon"
+
+[[generated]]
+id = "5csof6g0UldglKPrWr4H4"
+uri = "file://artifacts/math-gravity-painter/assets/images/world_fraction.png"
+type = "image"
+title = "fraction galaxy world icon"
+
+[[generated]]
+id = "lexzfAlHNAjOvs30UgRhi"
+uri = "file://artifacts/math-gravity-painter/assets/images/world_integer.png"
+type = "image"
+title = "integer space world icon"
+
+[[generated]]
+id = "pcLeXpRtLXaoIaaG2mpNo"
+uri = "file://artifacts/math-gravity-painter/assets/images/world_geometry.png"
+type = "image"
+title = "geometry planet world icon"
+
+[[generated]]
+id = "b8tFmRdRrpSux5433kOgf"
+uri = "file://artifacts/math-gravity-painter/assets/images/world_algebra.png"
+type = "image"
+title = "algebra station world icon"
+
+[[generated]]
+id = "rdb7KI5oEyPDPpLHUvw8-"
+uri = "file://artifacts/math-gravity-painter/assets/images/world_probability.png"
+type = "image"
+title = "probability zone world icon"
