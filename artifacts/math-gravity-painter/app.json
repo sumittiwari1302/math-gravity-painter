@@ -24,13 +24,14 @@
     },
     "web": {
       "favicon": "./assets/images/icon.png",
-      "backgroundColor": "#0D0B1E"
+      "backgroundColor": "#0D0B1E",
+      "bundler": "metro"
     },
     "plugins": [
       [
         "expo-router",
         {
-          "origin": "https://replit.com/"
+          "origin": "https://sumittiwari1302.github.io/math-gravity-painter/"
         }
       ],
       "expo-font",
