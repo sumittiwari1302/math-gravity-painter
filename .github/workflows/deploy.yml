@@ -29,15 +29,14 @@ jobs:
           node-version: 20
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
           version: 9
-          run_install: false
 
       - name: Get pnpm store directory
+        id: pnpm-cache
         shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
@@ -48,17 +47,21 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        working-directory: .
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Build Expo web
-        run: npx expo export --platform web --output-dir dist
+      - name: Export Expo web build
         working-directory: artifacts/math-gravity-painter
+        run: |
+          npx expo export --platform web --output-dir dist
         env:
           NODE_ENV: production
+          CI: true
 
-      - name: Add .nojekyll file
+      - name: Add .nojekyll to bypass Jekyll processing
         run: touch artifacts/math-gravity-painter/dist/.nojekyll
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
