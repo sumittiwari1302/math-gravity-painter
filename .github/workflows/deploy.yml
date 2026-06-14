@@ -56,6 +56,17 @@ jobs:
         env:
           NODE_ENV: production
           CI: true
+          PUBLIC_URL: /math-gravity-painter
+
+      - name: Fix asset paths for GitHub Pages subpath
+        working-directory: artifacts/math-gravity-painter/dist
+        run: |
+          # Replace absolute paths with relative paths in index.html
+          # e.g. src="/_expo/..." → src="./_expo/..."
+          sed -i 's|src="/|src="./|g' index.html
+          sed -i 's|href="/favicon|href="./favicon|g' index.html
+          echo "Patched index.html:"
+          grep -E '(src=|href=)' index.html || true
 
       - name: Add .nojekyll to bypass Jekyll processing
         run: touch artifacts/math-gravity-painter/dist/.nojekyll
